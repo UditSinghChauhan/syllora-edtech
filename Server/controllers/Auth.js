@@ -2,6 +2,9 @@ const User = require("../models/User");
 const OTP = require("../models/OTP");
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const mailSender = require("../utils/mailSender");
 
 
 
@@ -172,8 +175,161 @@ exports.signup = async (req,res) => {
 
 //Login
 exports.login = async (req,res) => {
+    try{
+        //get data from req body
+        const {email,password} = req.body;
+        //validation data
+        if(!email|| !password){
+            return res.status(403).json({
+                success:false,
+                message:'All fields are required , please try again',
+            });
+        }
+        //user check exist or not 
+        const user = await User.findOne({email}).populate("additionalDetails");
+        if(!user){
+            return res.status(401).json({
+                success:false,
+                message:"User is not registered, please signup first",
+            });
+        }
+
+        
+        //generate JWT, after password matching 
+        if(await bcrypt.compare(password, user.password)) {
+            const payload = {
+                email: user.email,
+                id: user._id,
+                role:user.role,
+            }
+            const token = jwt.sign(payload,process.env.JWT_SECRET,{
+                expiresIn:"2h",
+            })
+            user.token = token;
+            user.password = undefined;
+        
+
+        //create cookie and send response
+        const options = { 
+            expires: new Date(Date.now() + 3*24*60*60*1000),
+            httpOnly:true,
+        }
+        res.cookie("token", token, options).status(200).json({
+            success:true,
+            token,
+            user,
+            message:'Logged in successfully',
+
+        })
+
+    }
+    else{
+        return res.status(401).json({
+            success: false,
+            message:'Password is incorrect',
+
+        });
+    }
+    }
+
+    catch(error){
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message: 'Login Failure , please try again'
+        });
+
+    }
     
-}
+};
 
 
 //changePassword
+
+    //get data from req body 
+    //get oldPassword , newPassword , confirmPassword
+    //validation
+
+    //update pwd in DB
+    //send mail - Password updated
+
+    //return respnse
+    
+
+
+exports.changePassword = async (req, res) => {
+  try {
+    //  Get data from request body- oldPassword, newPassword, confirmPassword
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    //  Validation
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    //  Get user id from auth middleware
+    const userId = req.user.id;
+
+    //  Fetch user from DB
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    //  Check old password
+    const isPasswordMatch = await bcrypt.compare(
+      oldPassword,
+      user.password
+    );
+
+    if (!isPasswordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Old password is incorrect",
+      });
+    }
+
+    //  Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    //  Update password in DB
+    user.password = hashedPassword;
+    await user.save();
+
+    //  Send confirmation email
+    await mailSender(
+      user.email,
+      "Password Updated Successfully",
+      "Your password has been changed successfully."
+    );
+
+    //  Send response
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while changing password",
+    });
+  }
+};
+
+
