@@ -1,6 +1,6 @@
-const Tag = require("../models/Category");
+const Category = require("../models/Category");
 
-//create Tag hanlder function
+//create Category hanlder function
 
 exports.createCategory = async (req,res) => {
     try{
@@ -15,16 +15,16 @@ exports.createCategory = async (req,res) => {
         }
 
         //create entry in DB
-        const tagDetails = await Tag.create({
+        const categoryDetails = await Category.create({
             name:name,
             description:description,
         });
-        console.log(tagDetails);
+        console.log(categoryDetails);
         //return response
 
         return res.status(200).json({
             success:true,
-            message:"Tag created successfully",
+            message:"Category created successfully",
         })
     }
     catch(error){
@@ -35,14 +35,14 @@ exports.createCategory = async (req,res) => {
     }
 };
 
-//getAllTags handler function
+//getAllCategories handler function
 
-exports.showAllCategory = async (req,res) => {
+exports.showAllCategories = async (req,res) => {
     try{
-        const allTags = await Tag.find({}, {name:true,description:true});
+        const allCategories = await Category.find({}, {name:true,description:true});
         res.status(200).json({
             success:true,
-            message:"All tags returned successfully",
+            message:"All Categories returned successfully",
             allTags,
         })
     }

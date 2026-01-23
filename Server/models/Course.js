@@ -29,7 +29,7 @@ const courseSchema = new mongoose.Schema({
         ref:"RatingAndReveiws",
     }],
  
-    prices:{
+    price:{
         type:Number,
     },
     thumbnail:{ 
@@ -47,7 +47,8 @@ const courseSchema = new mongoose.Schema({
     }],
  
     tags:{
-        type:String,
+        type:[String],
+        required: true,
     }
 
 })
