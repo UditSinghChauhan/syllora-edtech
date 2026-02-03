@@ -28,11 +28,11 @@ function CourseDetails() {
   const { courseId } = useParams()
   // console.log(`course id: ${courseId}`)
 
-  // Declear a state to save the course details
+  // Declear a state to save the course details(courseData) 
   const [response, setResponse] = useState(null)
   const [confirmationModal, setConfirmationModal] = useState(null)
   useEffect(() => {
-    // Calling fetchCourseDetails fucntion to fetch the details
+    // Calling fetchCourseDetails function to fetch the details
     ;(async () => {
       try {
         const res = await fetchCourseDetails(courseId)
