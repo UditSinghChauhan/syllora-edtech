@@ -11,8 +11,8 @@ const mailSender = async (email,title , body) => {
           });
 
           //send mail
-          let info = await transport.sendMail({
-            from: 'StudyNotion || DevOps_Help - Udit',
+          let info = await transporter.sendMail({
+            from: 'Syllora || DevOps_Help - Udit',
             to: `${email}`,
             subject:`${title}`,
             html: `${body}`,
