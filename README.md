@@ -92,7 +92,71 @@
 
 ---
 
-## 📂 Project Structure
+## � Deployment Guide
+
+### Prerequisites
+- Node.js (v16+)
+- MongoDB Atlas account
+- Cloudinary account
+- Razorpay account (for payments)
+- Gmail account (for email service)
+
+### Environment Setup
+
+#### Backend (.env in server/)
+```
+MONGODB_URL=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret
+MAIL_HOST=smtp.gmail.com
+MAIL_USER=your_gmail@gmail.com
+MAIL_PASS=your_gmail_app_password
+RAZORPAY_KEY=your_razorpay_key
+RAZORPAY_SECRET=your_razorpay_secret
+CLOUD_NAME=your_cloudinary_cloud_name
+API_KEY=your_cloudinary_api_key
+API_SECRET=your_cloudinary_api_secret
+PORT=4000
+FRONTEND_URL=https://your-frontend-domain.com
+```
+
+#### Frontend (.env in root/)
+```
+REACT_APP_BACKEND_URL=https://your-backend-domain.com/api/v1
+```
+
+### Deployment Steps
+
+#### 1. Backend Deployment (e.g., Render, Railway, Heroku)
+1. Push server code to GitHub
+2. Connect to deployment platform
+3. Set environment variables
+4. Deploy
+
+#### 2. Frontend Deployment (e.g., Netlify, Vercel)
+1. Build the app: `npm run build`
+2. Deploy the `build/` folder
+3. Set environment variables
+4. Configure redirects for SPA routing
+
+#### 3. Database
+- Use MongoDB Atlas for production
+- Ensure IP whitelist allows deployment server IPs
+
+#### 4. Media Storage
+- Configure Cloudinary for file uploads
+- Update CORS settings if needed
+
+### Post-Deployment Checklist
+- [ ] Test user registration/login
+- [ ] Verify course creation and enrollment
+- [ ] Check payment integration
+- [ ] Test email functionality
+- [ ] Validate media uploads
+- [ ] Ensure responsive design
+
+---
+
+## �📂 Project Structure
 
 ```
 syllora-edtech/
