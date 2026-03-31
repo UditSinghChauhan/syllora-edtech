@@ -145,6 +145,13 @@ npm run dev
 - Demo credentials for student and instructor flows
 - Architecture diagram and API summary
 
+## Repo Docs
+
+- `README.md` for project overview and setup
+- `docs/ARCHITECTURE.md` for system design and module layout
+- `.env.example` and `server/.env.example` for environment setup
+- `LICENSE` for open-source usage terms
+
 ## Resume Summary
 
 Built a full-stack MERN edtech platform with role-based authentication, OTP verification, course management, protected learning flows, media uploads, and payment integration.
