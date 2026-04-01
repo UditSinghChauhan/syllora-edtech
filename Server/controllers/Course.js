@@ -478,6 +478,7 @@ exports.getFullCourseDetails = async (req, res) => {
   try {
     const { courseId } = req.body
     const userId = req.user.id
+    const userAccountType = req.user.accountType
     const courseDetails = await Course.findOne({
       _id: courseId,
     })
@@ -504,15 +505,27 @@ exports.getFullCourseDetails = async (req, res) => {
       })
     }
 
-    let courseProgressCount = null
-    try {
-      courseProgressCount = await CourseProgress.findOne({
-        courseID: courseId,
-        userId: userId,
+    if (
+      userAccountType === "Instructor" &&
+      String(courseDetails.instructor?._id) !== String(userId)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to access this course",
       })
-      console.log("courseProgressCount : ", courseProgressCount)
-    } catch (progressError) {
-      console.log("courseProgressCount lookup failed:", progressError.message)
+    }
+
+    let courseProgressCount = null
+    if (userAccountType === "Student") {
+      try {
+        courseProgressCount = await CourseProgress.findOne({
+          courseID: courseId,
+          userId: userId,
+        })
+        console.log("courseProgressCount : ", courseProgressCount)
+      } catch (progressError) {
+        console.log("courseProgressCount lookup failed:", progressError.message)
+      }
     }
 
     // if (courseDetails.status === "Draft") {
@@ -523,8 +536,10 @@ exports.getFullCourseDetails = async (req, res) => {
     // }
 
     let totalDurationInSeconds = 0
-    ;(courseDetails.courseContent || []).forEach((content) => {
-      ;(content.subSection || []).forEach((subSection) => {
+    ;(courseDetails.courseContent || [])
+      .filter(Boolean)
+      .forEach((content) => {
+      ;(content.subSection || []).filter(Boolean).forEach((subSection) => {
         const timeDurationInSeconds = parseInt(subSection.timeDuration)
         totalDurationInSeconds += Number.isNaN(timeDurationInSeconds)
           ? 0
