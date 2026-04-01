@@ -274,8 +274,15 @@ exports.editCourse = async (req, res) => {
       return res.status(404).json({ error: "Course not found" })
     }
 
+    if (String(course.instructor) !== String(req.user.id)) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to edit this course",
+      })
+    }
+
     // If Thumbnail Image is found, update it
-    if (req.files) {
+    if (req.files?.thumbnailImage) {
       console.log("thumbnail update")
       const thumbnail = req.files.thumbnailImage
       const thumbnailImage = await uploadImageToCloudinary(
@@ -287,7 +294,10 @@ exports.editCourse = async (req, res) => {
 
     // Update only the fields that are present in the request body
     for (const key in updates) {
-      if (updates.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(updates, key)) {
+        if (key === "courseId") {
+          continue
+        }
         if (key === "tag" || key === "instructions") {
           course[key] = JSON.parse(updates[key])
         } else {
