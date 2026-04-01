@@ -497,18 +497,22 @@ exports.getFullCourseDetails = async (req, res) => {
       })
       .exec()
 
-    let courseProgressCount = await CourseProgress.findOne({
-      courseID: courseId,
-      userId: userId,
-    })
-
-    console.log("courseProgressCount : ", courseProgressCount)
-
     if (!courseDetails) {
       return res.status(400).json({
         success: false,
         message: `Could not find course with id: ${courseId}`,
       })
+    }
+
+    let courseProgressCount = null
+    try {
+      courseProgressCount = await CourseProgress.findOne({
+        courseID: courseId,
+        userId: userId,
+      })
+      console.log("courseProgressCount : ", courseProgressCount)
+    } catch (progressError) {
+      console.log("courseProgressCount lookup failed:", progressError.message)
     }
 
     // if (courseDetails.status === "Draft") {
@@ -519,10 +523,12 @@ exports.getFullCourseDetails = async (req, res) => {
     // }
 
     let totalDurationInSeconds = 0
-    courseDetails.courseContent.forEach((content) => {
-      content.subSection.forEach((subSection) => {
+    ;(courseDetails.courseContent || []).forEach((content) => {
+      ;(content.subSection || []).forEach((subSection) => {
         const timeDurationInSeconds = parseInt(subSection.timeDuration)
-        totalDurationInSeconds += timeDurationInSeconds
+        totalDurationInSeconds += Number.isNaN(timeDurationInSeconds)
+          ? 0
+          : timeDurationInSeconds
       })
     })
 
