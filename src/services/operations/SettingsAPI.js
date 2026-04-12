@@ -67,14 +67,12 @@ export async function changePassword(token, formData) {
     const response = await apiConnector("POST", CHANGE_PASSWORD_API, formData, {
       Authorization: `Bearer ${token}`,
     })
-    console.log("CHANGE_PASSWORD_API API RESPONSE............", response)
 
     if (!response.data.success) {
       throw new Error(response.data.message)
     }
     toast.success("Password Changed Successfully")
   } catch (error) {
-    console.log("CHANGE_PASSWORD_API API ERROR............", error)
     toast.error(error.response.data.message)
   }
   toast.dismiss(toastId)
@@ -87,7 +85,6 @@ export function deleteProfile(token, navigate) {
       const response = await apiConnector("DELETE", DELETE_PROFILE_API, null, {
         Authorization: `Bearer ${token}`,
       })
-      console.log("DELETE_PROFILE_API API RESPONSE............", response)
 
       if (!response.data.success) {
         throw new Error(response.data.message)
@@ -95,7 +92,6 @@ export function deleteProfile(token, navigate) {
       toast.success("Profile Deleted Successfully")
       dispatch(logout(navigate))
     } catch (error) {
-      console.log("DELETE_PROFILE_API API ERROR............", error)
       toast.error("Could Not Delete Profile")
     }
     toast.dismiss(toastId)
