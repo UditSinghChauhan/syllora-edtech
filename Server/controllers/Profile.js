@@ -7,107 +7,6 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader")
 const mongoose = require("mongoose")
 const { convertSecondsToDuration } = require("../utils/secToDuration")
 
-// exports.updateProfile = async (req ,res) =>{
-//     try{
-//         //get data
-//         const {dateOfBirth="",about="", contactNumber,gender} = req.body;
-
-//         //get userId
-//         const id = req.user.id;
-//         //validation
-//         if(!contactNumber||!gender||!id){
-//             return res.status(400).json({
-//                 success:false,
-//                 message:'All fields are required',
-//             });
-//         }
-//         //find profile
-//         const userDetails = await User.findById(id);
-//         const profileId = userDetails.additionalDetails;
-//         const profileDetails = await Profile.findById(profileId);
-//         //update profile
-//         profileDetails.dateOfBirth= dateOfBirth;
-//         profileDetails.about = about ;
-//         profileDetails.gender = gender;
-//         profileDetails.contactNumber= contactNumber;
-//         await profileDetails.save();
-
-//         //return response
-//         return res.status(200).json({
-//             success:true,
-//             message:"Profile created Successfully",
-//             profileDetails,
-//         })
-//     }
-
-//     catch(error){
-//         return res.status(500).json({
-//             message:false,
-//             error: error.message,
-//         });
-//     }
-// };
-
-// //deleteAccount
-// //EXplore -> how can we schedule this deletion operation
-
-// exports.deleteAccount = async (req,res) => {
-//     try{
-//         //get 
-//         const id = req.user.id
-//         //validation
-//         const userDetails = await User.findById(id);
-//         if(!userDetails){
-//             return res.status(400).json({
-//                 success:false,
-//                 message:'User not found ',
-//             }) ;       }
-//         //delete profile
-//         await Profile.findByIdAndDelete({_id:userDetails.additionalDetails});
-//         //TODO:HW unenroll user from all enrolled courses
-//         //delete user
-//         await User.findByIdAndDelete({_id:id});
-//         //return response
-//         return res.status(200).json({
-//             success:true,
-//             message:'User Deleted Successfully',
-//         })
-//     }
-
-//     catch(error){
-//         return res.status(500).json({
-//             success:false,
-//             message:'User cannot be deleted successfully',
-//         });
-//     }
-// };
-
-
-// exports.getAllUserDetails = async (req,res) => {
-//     try{
-//         //get id
-//         const id = req.user.id;
-
-//         //validation and get user details
-//         const userDetails = await User.findById(id).populate("additionalDetails").exec();
-//         //return response
-//         return res.status(200).json({
-//             success:true,
-//             message:"fetched user details successfully",
-
-//         })
-//     }
-
-//     catch(error){
-//         return res.status(500).json({
-//             success:false,
-//             error:error.message,
-//         })
-//     }
-// }
-
-
-// Method for updating a profile
 exports.updateProfile = async (req, res) => {
   try {
     const {
@@ -120,7 +19,6 @@ exports.updateProfile = async (req, res) => {
     } = req.body
     const id = req.user.id
 
-    // Find the profile by id
     const userDetails = await User.findById(id)
     const profile = await Profile.findById(userDetails.additionalDetails)
 
@@ -130,16 +28,13 @@ exports.updateProfile = async (req, res) => {
     })
     await user.save()
 
-    // Update the profile fields
     profile.dateOfBirth = dateOfBirth
     profile.about = about
     profile.contactNumber = contactNumber
     profile.gender = gender
 
-    // Save the updated profile
     await profile.save()
 
-    // Find the updated user details
     const updatedUserDetails = await User.findById(id)
       .populate("additionalDetails")
       .exec()
@@ -150,7 +45,7 @@ exports.updateProfile = async (req, res) => {
       updatedUserDetails,
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return res.status(500).json({
       success: false,
       error: error.message,
@@ -161,7 +56,6 @@ exports.updateProfile = async (req, res) => {
 exports.deleteAccount = async (req, res) => {
   try {
     const id = req.user.id
-    console.log(id)
     const user = await User.findById({ _id: id })
     if (!user) {
       return res.status(404).json({
@@ -169,18 +63,16 @@ exports.deleteAccount = async (req, res) => {
         message: "User not found",
       })
     }
-    // Delete Assosiated Profile with the User
     await Profile.findByIdAndDelete({
       _id: new mongoose.Types.ObjectId(user.additionalDetails),
     })
     for (const courseId of user.courses) {
       await Course.findByIdAndUpdate(
         courseId,
-        { $pull: { studentsEnroled: id } },
+        { $pull: { studentsEnrolled: id } },
         { new: true }
       )
     }
-    // Now Delete User
     await User.findByIdAndDelete({ _id: id })
     res.status(200).json({
       success: true,
@@ -188,7 +80,7 @@ exports.deleteAccount = async (req, res) => {
     })
     await CourseProgress.deleteMany({ userId: id })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res
       .status(500)
       .json({ success: false, message: "User Cannot be deleted successfully" })
@@ -201,7 +93,6 @@ exports.getAllUserDetails = async (req, res) => {
     const userDetails = await User.findById(id)
       .populate("additionalDetails")
       .exec()
-    console.log(userDetails)
     res.status(200).json({
       success: true,
       message: "User Data fetched successfully",
@@ -225,7 +116,6 @@ exports.updateDisplayPicture = async (req, res) => {
       1000,
       1000
     )
-    console.log(image)
     const updatedProfile = await User.findByIdAndUpdate(
       { _id: userId },
       { image: image.secure_url },
@@ -283,7 +173,6 @@ exports.getEnrolledCourses = async (req, res) => {
       if (SubsectionLength === 0) {
         userDetails.courses[i].progressPercentage = 100
       } else {
-        // To make it up to 2 decimal point
         const multiplier = Math.pow(10, 2)
         userDetails.courses[i].progressPercentage =
           Math.round(
@@ -318,12 +207,10 @@ exports.instructorDashboard = async (req, res) => {
       const totalStudentsEnrolled = course.studentsEnrolled.length
       const totalAmountGenerated = totalStudentsEnrolled * course.price
 
-      // Create a new object with the additional fields
       const courseDataWithStats = {
         _id: course._id,
         courseName: course.courseName,
         courseDescription: course.courseDescription,
-        // Include other course properties as needed
         totalStudentsEnrolled,
         totalAmountGenerated,
       }

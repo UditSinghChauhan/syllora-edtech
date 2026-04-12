@@ -74,11 +74,5 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-// Register the model under both names to support existing refs.
-const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
-
-if (!mongoose.models.user) {
-	mongoose.model("user", userSchema, "users");
-}
-
-module.exports = UserModel;
+// Export the model
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);
