@@ -29,8 +29,8 @@ exports.contactUsController = async (req, res) => {
       message: "Email sent successfully",
     })
   } catch (error) {
-    console.log("Error", error)
-    console.log("Error message :", error.message)
+    console.error(error)
+    console.error(error.message)
     return res.json({
       success: false,
       message: "Something went wrong...",

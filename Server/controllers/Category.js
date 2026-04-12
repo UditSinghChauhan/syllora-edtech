@@ -74,7 +74,6 @@ exports.createCategory = async (req, res) => {
 			name: name,
 			description: description,
 		});
-		console.log(CategorysDetails);
 		return res.status(200).json({
 			success: true,
 			message: "Categorys Created Successfully",
@@ -89,7 +88,6 @@ exports.createCategory = async (req, res) => {
 
 exports.showAllCategories = async (req, res) => {
 	try {
-        console.log("INSIDE SHOW ALL CATEGORIES");
 		const allCategorys = await Category.find({});
 		res.status(200).json({
 			success: true,
@@ -108,7 +106,6 @@ exports.showAllCategories = async (req, res) => {
 exports.categoryPageDetails = async (req, res) => {
   try {
     const { categoryId } = req.body
-    console.log("PRINTING CATEGORY ID: ", categoryId)
 
     const selectedCategory = await Category.findById(categoryId)
       .populate({

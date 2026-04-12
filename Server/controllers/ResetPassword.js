@@ -47,7 +47,7 @@ const crypto = require("crypto");
 //         });
 //     }
 //      catch(error){
-//         console.log(error);
+//         console.error(error);
 //         return res.status(500).json({
 //             success:false,
 //             message:'Something went wrong while sending reset pwd mail'
@@ -106,7 +106,7 @@ const crypto = require("crypto");
 
 //     }
 //     catch(error){
-//         console.log(error);
+//         console.error(error);
 //         return res.status(500).json({
 //             success:false,
 //             message:'Something went wrong whilst password reset'
@@ -136,7 +136,6 @@ exports.resetPasswordToken = async (req, res) => {
 			},
 			{ new: true }
 		);
-		console.log("DETAILS", updatedDetails);
 
 		const url = `http://localhost:3000/update-password/${token}`;
 
