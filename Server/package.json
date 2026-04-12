@@ -1,17 +1,16 @@
 {
-  "name": "server",
+  "name": "syllora-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express REST API for the Syllora EdTech platform — handles auth, courses, payments, and progress tracking.",
   "main": "index.js",
+  "author": "Udit Singh Chauhan",
+  "license": "MIT",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["edtech", "express", "mongodb", "razorpay", "cloudinary"],
   "dependencies": {
-    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "cookie-parser": "^1.4.7",

@@ -1,8 +1,20 @@
+# Dependencies
 node_modules/
-server/node_modules
+server/node_modules/
+
+# Production build
 build/
+
+# Environment files
 .env
 .env.*
 !.env.example
 !server/.env.example
+
+# OS artifacts
 .DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Temp / scratch files
+*.py
