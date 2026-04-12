@@ -191,14 +191,13 @@ exports.sendotp = async (req, res) => {
     const otpBody = await OTP.create({ email, otp })
 
     try {
-      const emailResponse = await mailSender(
+      await mailSender(
         email,
         "OTP Verification",
         `Your OTP for email verification is: ${otp}`
       )
-      console.log("Email sent successfully:", emailResponse.response)
     } catch (error) {
-      console.log("Error occurred while sending email: ", error)
+      console.error("Error occurred while sending email: ", error)
       await OTP.findByIdAndDelete(otpBody._id)
       return res.status(500).json({
         success: false,
@@ -209,10 +208,9 @@ exports.sendotp = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "OTP Sent Successfully",
-      otp,
     })
   } catch (error) {
-    console.log(error.message)
+    console.error(error.message)
     return res.status(500).json({ success: false, error: error.message })
   }
 }
@@ -241,7 +239,7 @@ exports.changePassword = async (req, res) => {
     )
 
     try {
-      const emailResponse = await mailSender(
+      await mailSender(
         updatedUserDetails.email,
         "Password for your account has been updated",
         passwordUpdated(
@@ -249,7 +247,6 @@ exports.changePassword = async (req, res) => {
           `Password updated successfully for ${updatedUserDetails.firstName} ${updatedUserDetails.lastName}`
         )
       )
-      console.log("Email sent successfully:", emailResponse.response)
     } catch (error) {
       console.error("Error occurred while sending email:", error)
       return res.status(500).json({
