@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Chart, registerables } from "chart.js"
-import { Pie } from "react-chartjs-2"
+import { Doughnut } from "react-chartjs-2"
 
 Chart.register(...registerables)
 
@@ -8,17 +8,20 @@ export default function InstructorChart({ courses }) {
   // State to keep track of the currently selected chart
   const [currChart, setCurrChart] = useState("students")
 
-  // Function to generate random colors for the chart
-  const generateRandomColors = (numColors) => {
-    const colors = []
-    for (let i = 0; i < numColors; i++) {
-      const color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
-        Math.random() * 256
-      )}, ${Math.floor(Math.random() * 256)})`
-      colors.push(color)
-    }
-    return colors
-  }
+  const chartColors = [
+    "#06B6D4",
+    "#F59E0B",
+    "#22C55E",
+    "#EC4899",
+    "#8B5CF6",
+    "#EF4444",
+    "#14B8A6",
+    "#3B82F6",
+  ]
+
+  const backgroundColor = courses.map(
+    (_, index) => chartColors[index % chartColors.length]
+  )
 
   // Data for the chart displaying student information
   const chartDataStudents = {
@@ -26,7 +29,9 @@ export default function InstructorChart({ courses }) {
     datasets: [
       {
         data: courses.map((course) => course.totalStudentsEnrolled),
-        backgroundColor: generateRandomColors(courses.length),
+        backgroundColor,
+        borderColor: "#161D29",
+        borderWidth: 2,
       },
     ],
   }
@@ -37,7 +42,9 @@ export default function InstructorChart({ courses }) {
     datasets: [
       {
         data: courses.map((course) => course.totalAmountGenerated),
-        backgroundColor: generateRandomColors(courses.length),
+        backgroundColor,
+        borderColor: "#161D29",
+        borderWidth: 2,
       },
     ],
   }
@@ -45,6 +52,24 @@ export default function InstructorChart({ courses }) {
   // Options for the chart
   const options = {
     maintainAspectRatio: false,
+    cutout: "58%",
+    plugins: {
+      legend: {
+        position: "bottom",
+        align: "start",
+        labels: {
+          color: "#CBD5E1",
+          boxWidth: 14,
+          boxHeight: 14,
+          padding: 16,
+          usePointStyle: true,
+          pointStyle: "circle",
+          font: {
+            size: 12,
+          },
+        },
+      },
+    },
   }
 
   return (
@@ -74,9 +99,9 @@ export default function InstructorChart({ courses }) {
           Income
         </button>
       </div>
-      <div className="relative mx-auto aspect-square h-full w-full">
+      <div className="mx-auto h-[320px] w-full max-w-[420px]">
         {/* Render the Pie chart based on the selected chart */}
-        <Pie
+        <Doughnut
           data={currChart === "students" ? chartDataStudents : chartIncomeData}
           options={options}
         />
