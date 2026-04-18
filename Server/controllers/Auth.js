@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
 const { passwordUpdated } = require("../mail/templates/passwordUpdate")
+const emailVerificationTemplate = require("../mail/templates/emailVerificationTemplate")
 const Profile = require("../models/Profile")
 require("dotenv").config()
 
@@ -191,17 +192,13 @@ exports.sendotp = async (req, res) => {
     const otpBody = await OTP.create({ email, otp })
 
     try {
-      await mailSender(
-        email,
-        "OTP Verification",
-        `Your OTP for email verification is: ${otp}`
-      )
+      await mailSender(email, "OTP Verification", emailVerificationTemplate(otp))
     } catch (error) {
-      console.error("Error occurred while sending email: ", error)
+      console.error("Error occurred while sending OTP email:", error.message)
       await OTP.findByIdAndDelete(otpBody._id)
       return res.status(500).json({
         success: false,
-        message: "Could not send OTP",
+        message: "Could not send OTP email. Please verify the email service configuration.",
       })
     }
 
