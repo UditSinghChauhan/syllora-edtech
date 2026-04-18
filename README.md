@@ -5,8 +5,25 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-syllora--edtech.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://syllora-edtech.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-UditSinghChauhan%2Fsyllora--edtech-181717?style=for-the-badge&logo=github)](https://github.com/UditSinghChauhan/syllora-edtech)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![CI](https://github.com/UditSinghChauhan/syllora-edtech/actions/workflows/ci.yml/badge.svg)](https://github.com/UditSinghChauhan/syllora-edtech/actions/workflows/ci.yml)
 
 ---
+
+## Screenshots
+
+| Homepage | Course Catalog |
+|:---:|:---:|
+| ![Homepage](images/screenshot-home.png) | ![Course Catalog](images/screenshot-catalog.png) |
+
+| Video Player | Student Profile |
+|:---:|:---:|
+| ![Course Player](images/screenshot-player.png) | ![Student Profile](images/screenshot-profile.png) |
+
+| Instructor — Add Course |
+|:---:|
+| ![Add Course](images/screenshot-instructor.png) |
+
+
 
 ## The Problem
 
