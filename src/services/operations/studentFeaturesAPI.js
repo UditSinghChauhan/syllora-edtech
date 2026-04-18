@@ -46,12 +46,24 @@ export async function buyCourse(token, courses, userDetails, navigate, dispatch)
         if(!orderResponse.data.success) {
             throw new Error(orderResponse.data.message);
         }
+
+        const paymentData = orderResponse.data.data;
+        const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
+
+        if (!paymentData?.id || !paymentData?.amount || !paymentData?.currency) {
+            throw new Error("Payment order response is incomplete.");
+        }
+
+        if (!razorpayKey) {
+            throw new Error("Razorpay key is missing. Set REACT_APP_RAZORPAY_KEY in the frontend environment.");
+        }
+
         //options
         const options = {
-            key: process.env.RAZORPAY_KEY,
-            currency: orderResponse.data.message.currency,
-            amount: `${orderResponse.data.message.amount}`,
-            order_id:orderResponse.data.message.id,
+            key: razorpayKey,
+            currency: paymentData.currency,
+            amount: `${paymentData.amount}`,
+            order_id: paymentData.id,
             name:"Syllora",
             description: "Thank You for Purchasing the Course",
             image:rzpLogo,
@@ -61,7 +73,7 @@ export async function buyCourse(token, courses, userDetails, navigate, dispatch)
             },
             handler: function(response) {
                 //send successful wala mail
-                sendPaymentSuccessEmail(response, orderResponse.data.message.amount,token );
+                sendPaymentSuccessEmail(response, paymentData.amount, token);
                 //verifyPayment
                 verifyPayment({...response, courses}, token, navigate, dispatch);
             }
@@ -75,7 +87,7 @@ export async function buyCourse(token, courses, userDetails, navigate, dispatch)
 
     }
     catch(error) {
-        toast.error("Could not make Payment");
+        toast.error(error?.response?.data?.message || error?.message || "Could not make Payment");
     }
     toast.dismiss(toastId);
 }
@@ -112,7 +124,7 @@ async function verifyPayment(bodyData, token, navigate, dispatch) {
         dispatch(resetCart());
     }   
     catch(error) {
-        toast.error("Could not verify Payment");
+        toast.error(error?.response?.data?.message || "Could not verify Payment");
     }
     toast.dismiss(toastId);
     dispatch(setPaymentLoading(false));
